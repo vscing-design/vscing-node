@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WebSocket IM</title>
+</head>
+<body>
+  <input type="text" id="message" placeholder="Type your message here">
+  <button onclick="sendMessage()">Send</button>
+  <ul id="chat"></ul>
+  
+  <script>
+    // https://juejin.cn/post/7268864806558515237?searchId=2024050919520465E29F93E81225BE162D#heading-1
+    // https://blog.csdn.net/u013565133/article/details/135688518
+    // https://juejin.cn/post/7264078722758950967
+    let ws = null;
+
+    let serverNum = 0;
+    let serverStatus = 'loading'; // loading, connecting, repeat, close,
+    let timer = null;
+    let pageTimer = null;
+
+    function init() {
+      ws = new WebSocket('ws:///127.0.0.1:5353');
+
+      ws.onopen = function(event) {
+        console.log('ws链接成功', event);
+        serverStatus = 'connecting';
+        leepHeartbeat();
+      };
+
+      ws.onerror = function(event) {
+        console.log('ws链接失败', event);
+      };
+      
+      ws.onclose = function(event) {
+        console.log("ws链接关闭", event);
+        
+      };
+
+      ws.onmessage = function(event) {
+        const { type, vData } = JSON.parse(event.data);
+        if(type === 'data') {
+          console.log('%c [ 接收到vData ]-21', 'font-size:13px; background:pink; color:#bf2c9f;', vData)
+          const chat = document.getElementById('chat');
+          const li = document.createElement('li');
+          li.appendChild(document.createTextNode(vData));
+          chat.appendChild(li);
+        }
+      };
+
+    }
+   
+    init()
+        
+    // 用户发送消息
+    function sendMessage() {
+      const messageInput = document.getElementById('message');
+      const message = messageInput.value;
+      console.log('%c [ 发送到message ]-31', 'font-size:13px; background:pink; color:#bf2c9f;', message)
+      ws.send(JSON.stringify({
+        type: 'data',
+        vData: message
+      }));
+      messageInput.value = '';
+    }
+
+    // 彻底关闭连接
+    function closeWs() {
+      console.log('%c [ ws关闭 ]-63', 'font-size:13px; background:pink; color:#bf2c9f;', )
+      serverStatus = 'close';
+      clearInterval(timer);
+      ws.close(1000) // https://developer.mozilla.org/zh-CN/docs/Web/API/CloseEvent#status_codes
+    }
+
+    // 定时心跳
+    function leepHeartbeat() {
+      clearInterval(timer);
+      timer = setInterval(() => {
+        console.log('%c [ ws状态异常 ]-76', 'font-size:13px; background:pink; color:#bf2c9f;', ws.readyState)
+        if(ws.readyState === 1) {
+          ws.send(JSON.stringify({
+            type: 'ping',
+            vData: '心跳检测'
+          }));
+        }
+      }, 30000);
+    }
+
+    // 重连
+    function resetWs() {
+      console.log('%c [ ws重连 ]-83', 'font-size:13px; background:pink; color:#bf2c9f;', )
+      serverStatus = 'repeat';
+      init();
+    }
+
+    // 监听页面关闭事件
+    window.addEventListener('beforeunload', (event) => {
+      closeWs();
+      // 设置提示信息
+      event.returnValue = '你有未保存的更改！';
+    });
+
+    // 监听窗口离开事件
+    window.addEventListener('visibilitychange', function(event) {
+      clearTimeout(pageTimer);
+      if(document.visibilityState === 'visible' && ws.readyState === 3) {
+        resetWs();
+      }
+      if(document.visibilityState === 'hidden' && ws.readyState === 1) {
+        // 离开页面后三分钟关闭ws
+        pageTimer = setTimeout(() => {
+          closeWs();
+        }, 3*60*1000);
+      }
+    });
+  </script>
+</body>
+</html>
