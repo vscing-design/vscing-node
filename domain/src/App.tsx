@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button } from "@/components/ui/button"
+import { Button } from "@/shadcn-ui/ui/button"
 import './App.css'
 
 function App() {
@@ -9,6 +9,9 @@ function App() {
     <>
       <h1>Vite + React</h1>
       <Button>Click me</Button>
+      <Button variant="outline">Button</Button>
+      &nbsp;
+      <Button variant="destructive">Destructive</Button>
     </>
   )
 }
