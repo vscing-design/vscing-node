@@ -5,16 +5,16 @@
   "tsx": true,
   "tailwind": {
     "config": "tailwind.config.ts",
-    "css": "@/shadcn-ui/styles/global.css",
+    "css": "./src/shadcn-ui/styles/global.css",
     "baseColor": "zinc",
     "cssVariables": true,
     "prefix": ""
   },
   "aliases": {
-    "components": "@/shadcn-ui/components",
-    "lib": "@/shadcn-ui/lib",
-    "utils": "@/shadcn-ui/lib/utils",
-    "ui": "@/shadcn-ui/ui",
-    "hooks": "@/shadcn-ui/hooks"
+    "components": "./src/shadcn-ui/components",
+    "lib": "./src/shadcn-ui/lib",
+    "utils": "./src/shadcn-ui/lib/utils",
+    "ui": "./src/shadcn-ui/ui",
+    "hooks": "./src/shadcn-ui/hooks"
   }
 }

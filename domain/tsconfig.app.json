@@ -28,5 +28,11 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"]
+  "include": [
+    "src/**/*", // 确保包含 .tsx 文件
+    "script/**/*.ts",
+    "script/**/*.d.ts",
+    "mock/**/*.ts",
+    "vite.config.ts"
+  ]
 }

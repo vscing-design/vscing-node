@@ -1,7 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-    darkMode: ["class"],
-    content: [],
+  darkMode: ["class"],
+  content: [
+    './public/**/*.html', // 包括所有 HTML 文件
+    './src/**/*.{js,jsx,ts,tsx}', // 包括所有 JavaScript 和 TypeScript 文件
+  ],
   theme: {
   	extend: {
   		borderRadius: {

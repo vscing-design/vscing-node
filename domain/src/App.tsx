@@ -1,18 +1,15 @@
-import { useState } from 'react'
-import { Button } from "@/shadcn-ui/ui/button"
-import './App.css'
+import { ThemeProvider } from "@/shadcn-ui/components/theme-provider";
+// import styles from "./App.less";
+import 'dayjs/locale/zh-cn';
+import { RouterProvider} from "react-router-dom";
+import router from '@/routers';
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  
   return (
-    <>
-      <h1>Vite + React</h1>
-      <Button>Click me</Button>
-      <Button variant="outline">Button</Button>
-      &nbsp;
-      <Button variant="destructive">Destructive</Button>
-    </>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <RouterProvider router={router} />
+    </ThemeProvider>
   )
 }
 
