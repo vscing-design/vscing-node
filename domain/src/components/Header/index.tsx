@@ -1,4 +1,5 @@
 import Images from "@/assets";
+import { Icons } from "@/assets/icons";
 import { useTheme } from "@/shadcn-ui/components/theme-provider";
 import { Button } from "@/shadcn-ui/ui/button";
 import { Moon, Sun } from "lucide-react";
@@ -22,7 +23,7 @@ function Header() {
         <img src={Images.beer} width={16} />
       </Button>
       <Button variant="outline" size="icon">
-        <img src={isDark ? Images.darkGithub : Images.lightGithub} width={16} />
+        <Icons.gitHub />
       </Button>
       <Button variant="outline" size="icon" onClick={() => setTheme(isDark ? "light" : "dark")}>
         <Moon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

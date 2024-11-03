@@ -2,6 +2,7 @@
 import React, { lazy, Suspense } from 'react';
 import {createBrowserRouter, RouteObject } from 'react-router-dom';
 import NotFound from '@/page/exception/404';
+import { Icons } from '@/assets/icons';
 
 
 const lazyLoad = (component: string, props: any = {}): React.ReactNode => {
@@ -21,7 +22,10 @@ const lazyLoad = (component: string, props: any = {}): React.ReactNode => {
   // fallback 动画 Nprogress 和 Spin
   return <Suspense
     fallback={
-      "loading"
+      <div className="w-[100vw] h-[100vh] flex justify-center items-center text-lg text-muted-foreground">
+        <Icons.spinner className="mr-2 h-8 w-8 animate-spin" />
+        Loading...
+      </div>
     }
   >
     <ChildrenComp {...props} />
