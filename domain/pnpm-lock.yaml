@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@ant-design/icons': ^5.5.1
   '@eslint/js': ^9.13.0
+  '@hookform/resolvers': ^3.9.1
   '@radix-ui/react-dialog': ^1.1.2
   '@radix-ui/react-dropdown-menu': ^2.1.2
   '@radix-ui/react-hover-card': ^1.1.2
@@ -41,6 +42,7 @@ specifiers:
   prettier: ^3.3.3
   react: ^18.3.1
   react-dom: ^18.3.1
+  react-hook-form: ^7.53.1
   react-i18next: ^15.1.0
   react-router-dom: '6'
   rimraf: ^6.0.1
@@ -56,9 +58,11 @@ specifiers:
   typescript-eslint: ^8.10.0
   vite: ^5.4.9
   vite-plugin-eslint: ^1.8.1
+  zod: ^3.23.8
 
 dependencies:
   '@ant-design/icons': 5.5.1_nnrd3gsncyragczmpvfhocinkq
+  '@hookform/resolvers': 3.9.1_react-hook-form@7.53.1
   '@radix-ui/react-dialog': 1.1.2_mn6whcxlx7so2an4c3a4lp7zmq
   '@radix-ui/react-dropdown-menu': 2.1.2_mn6whcxlx7so2an4c3a4lp7zmq
   '@radix-ui/react-hover-card': 1.1.2_mn6whcxlx7so2an4c3a4lp7zmq
@@ -75,12 +79,14 @@ dependencies:
   lucide-react: 0.454.0_react@18.3.1
   react: 18.3.1
   react-dom: 18.3.1_react@18.3.1
+  react-hook-form: 7.53.1_react@18.3.1
   react-i18next: 15.1.0_pgn2fzvvnd4aaeukwhmrcrd4ce
   react-router-dom: 6.27.0_nnrd3gsncyragczmpvfhocinkq
   stylelint: 16.10.0_typescript@5.6.3
   stylelint-config-prettier: 9.0.5_stylelint@16.10.0
   tailwind-merge: 2.5.4
   tailwindcss-animate: 1.0.7_tailwindcss@3.4.14
+  zod: 3.23.8
 
 devDependencies:
   '@eslint/js': 9.13.0
@@ -668,6 +674,14 @@ packages:
 
   /@floating-ui/utils/0.2.8:
     resolution: {integrity: sha512-kym7SodPp8/wloecOpcmSnWJsK7M0E5Wg8UcFA+uO4B9s5d0ywXOEro/8HM9x0rW+TljRzul/14UYz3TleT3ig==}
+    dev: false
+
+  /@hookform/resolvers/3.9.1_react-hook-form@7.53.1:
+    resolution: {integrity: sha512-ud2HqmGBM0P0IABqoskKWI6PEf6ZDDBZkFqe2Vnl+mTHCEHzr3ISjjZyCwTjC/qpL25JC9aIDkloQejvMeq0ug==}
+    peerDependencies:
+      react-hook-form: ^7.0.0
+    dependencies:
+      react-hook-form: 7.53.1_react@18.3.1
     dev: false
 
   /@humanfs/core/0.19.1:
@@ -3919,6 +3933,15 @@ packages:
       scheduler: 0.23.2
     dev: false
 
+  /react-hook-form/7.53.1_react@18.3.1:
+    resolution: {integrity: sha512-6aiQeBda4zjcuaugWvim9WsGqisoUk+etmFEsSUMm451/Ic8L/UAb7sRtMj3V+Hdzm6mMjU1VhiSzYUZeBm0Vg==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18 || ^19
+    dependencies:
+      react: 18.3.1
+    dev: false
+
   /react-i18next/15.1.0_pgn2fzvvnd4aaeukwhmrcrd4ce:
     resolution: {integrity: sha512-zj3nJynMnZsy2gPZiOTC7XctCY5eQGqT3tcKMmfJWC9FMvgd+960w/adq61j8iPzpwmsXejqID9qC3Mqu1Xu2Q==}
     peerDependencies:
@@ -4898,3 +4921,7 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
+
+  /zod/3.23.8:
+    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
+    dev: false
