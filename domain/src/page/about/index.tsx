@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shadcn-ui/ui/card";
+import { AppWindowIcon, AppWindowMacIcon, FolderCodeIcon } from "lucide-react";
 
 const formSchema = z.object({
   username: z.string().min(2).max(50),
@@ -42,8 +43,8 @@ function About() {
             htmlFor="paypal"
             className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
           >
-            <Icons.paypal className="mb-3 h-6 w-6" />
-            Paypal
+            <AppWindowIcon/>
+            导入浏览器书签文件并自动生成
           </Label>
         </div>
 
@@ -52,8 +53,8 @@ function About() {
             htmlFor="paypal"
             className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
           >
-            <Icons.paypal className="mb-3 h-6 w-6" />
-            Paypal
+            <FolderCodeIcon />
+            从零开始手动创建
           </Label>
         </div>
       </div>
