@@ -70,7 +70,7 @@ function About() {
               <FormField
                 control={form.control}
                 name="username"
-                render={({ field }) => (
+                render={({ field }: any) => (
                   <FormItem>
                     <FormLabel>Username</FormLabel>
                     <FormControl>
@@ -86,7 +86,7 @@ function About() {
               <FormField
                 control={form.control}
                 name="username1"
-                render={({ field }) => (
+                render={({ field }: any) => (
                   <FormItem>
                     <FormLabel>Username</FormLabel>
                     <FormControl>

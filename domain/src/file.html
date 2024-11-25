@@ -3,144 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>{{.title}}</title>
-  </head>
-
-  <body>
-    输出文本：{{.desc}}
-    <div>hello golang</div>
-
-    <input type="file" id="fileInput" />
-  </body>
-  <script> // 创建 fps 面板展示元素
-      var fpsPanel = document.createElement("div");
-      fpsPanel.setAttribute("id", "fps");
-      fpsPanel.style.position = "fixed";
-      fpsPanel.style.left = "3px";
-      fpsPanel.style.top = "3px";
-      fpsPanel.style.color = "red";
-      fpsPanel.style.zIndex = 10000;
-      // 将面板插入到 body
-      document.body.append(fpsPanel);
-      // fps 监测逻辑实现
-      var showFPS = (function () {
-        var requestAnimationFrame =
-          window.requestAnimationFrame ||
-          window.webkitRequestAnimationFrame ||
-          window.mozRequestAnimationFrame ||
-          window.oRequestAnimationFrame ||
-          window.msRequestAnimationFrame ||
-          function (callback) {
-            window.setTimeout(callback, 1000 / 60);
-          };
-        var e, pe, pid, fps, last, offset, step, appendFps;
-
-        fps = 0;
-        last = Date.now();
-        step = function () {
-          offset = Date.now() - last;
-          fps += 1;
-          if (offset >= 1000) {
-            last += offset;
-            appendFps(fps);
-            fps = 0;
-          }
-          requestAnimationFrame(step);
-        };
-        appendFps = function (fps) {
-          // 打印 fps
-          console.log(fps + "FPS");
-          // 修改面板显示的值
-          fpsPanel.innerHTML = fps + "FPS";
-        };
-        step();
-      })(); </script>
-  <script>
-    function parseBookmarks(bookmarksHtml) {
-      const parser = new DOMParser();
-      const root = parser.parseFromString(bookmarksHtml, "text/html");
-      const result = [];
-      walkBookmarksTree(root, result);
-      console.log('%c [ result ]-22', 'font-size:13px; background:pink; color:#bf2c9f;', result)
-    }
-
-    function walkBookmarksTree(root, result) {
-        let node = root.querySelector("dl");
-        let els = node.children;
-        if (els && els.length > 0) {
-            for (let i = 0; i < els.length; i++) {
-                let item = els[i];
-                // p标签直接跳过
-                if (item.tagName === "P") {
-                    continue;
-                }
-                // dt标签
-                if (item.tagName === "DT") {
-                    let h3Node = item.querySelector("h3");
-                    let aNode = item.querySelector("a");
-                    let dlNode = item.querySelector("dl");
-                    let child = null;
-                    if(h3Node && dlNode) {
-                        child = {
-                            name: h3Node.innerText ?? "",
-                            folder: true,
-                            addDate: h3Node.getAttribute("add_date"),
-                            lastModified: h3Node.getAttribute("last_modified"),
-                            children: [],
-                        };
-                        walkBookmarksTree(item, child.children);
-                        result.push(child);
-                    } else if(aNode) {
-                        result.push({
-                            name: aNode.innerText ?? "",
-                            url: aNode.href ?? "",
-                            addDate: aNode.getAttribute("add_date") ?? "",
-                            icon: aNode.getAttribute("icon") ?? "",
-                        })
-                    }
-                }
-            }
-        }
-        return result;
-    }   
-
-    parseBookmarks(localStorage.getItem('yeqian'));
-
-    document
-      .getElementById("fileInput")
-      .addEventListener("change", function (event) {
-        const file = event.target.files[0];
-        if (!file) {
-          return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          const contents = e.target.result;
-          console.log('%c [ contents ]-96', 'font-size:13px; background:pink; color:#bf2c9f;', contents)
-          localStorage.setItem('yeqian', contents);
-        //   console.log(parseBookmarks(contents)); // 输出文件内容
-          // 你可以在这里进一步解析HTML内容
-        };
-        reader.onerror = function (e) {
-          console.error("File could not be read! Code " + e.target.error.code);
-        };
-
-        reader.readAsText(file); // 读取文件内容为文本
-      });
-
-    // webwork 处理数据
-    // 解析数据
-    // indexdb 存储数据
-    // 不支持的情况处理
-  </script>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Draggable Tree Example</title>
     <style>
       #tree {
@@ -168,8 +30,9 @@
       }
       .drag-enter-animation {
         position: relative;
+        border-color: rgb(0, 123, 255);
       }
-      .drag-enter-animation::before {
+      /* .drag-enter-animation::before {
         content: '';
         position: absolute;
         left: 0;
@@ -177,7 +40,7 @@
         height: 2px;
         background-color: red;
         bottom: -2px;
-      }
+      } */
     </style>
   </head>
   <body>
