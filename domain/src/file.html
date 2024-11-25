@@ -136,3 +136,192 @@
     // 不支持的情况处理
   </script>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Draggable Tree Example</title>
+    <style>
+      #tree {
+        width: 300px;
+        border: 1px solid #ccc;
+        padding: 10px;
+      }
+      #tree [data-id] {
+        border: 1px dashed #ccc;
+        padding: 5px;
+        margin-top: 5px;
+        cursor: move;
+      }
+      #tree [data-level="2"] {
+        margin-left: 20px;
+      }
+      #tree [data-level="3"] {
+        margin-left: 30px;
+      }
+      #tree [data-level="4"] {
+        margin-left: 40px;
+      }
+      #tree [data-level="5"] {
+        margin-left: 50px;
+      }
+      .drag-enter-animation {
+        position: relative;
+      }
+      .drag-enter-animation::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: red;
+        bottom: -2px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="tree" draggable="false"></div>
+
+    <script>
+      const treeData = [
+        {
+          id: 1,
+          title: "Node 1",
+          children: [
+            {
+              id: 2,
+              title: "Node 1.1",
+              children: [],
+            },
+            {
+              id: 3,
+              title: "Node 1.2",
+              children: [],
+            },
+          ],
+        },
+        {
+          id: 4,
+          title: "Node 2",
+          children: [
+            {
+              id: 5,
+              title: "Node 2.1",
+              children: [],
+            }
+          ],
+        },
+        {
+          id: 6,
+          title: "Node 3",
+          children: [],
+        },
+      ];
+
+      // 获取树的容器
+      const treeContainer = document.getElementById("tree");
+
+      function createNodeElement(nodeData) {
+        const element = document.createElement("div");
+        element.setAttribute("draggable", true);
+        element.setAttribute("data-id", nodeData.id);
+        element.setAttribute("data-level", nodeData.level);
+        element.textContent = nodeData.title;
+        // 将原始数据存储在元素上，以便后续操作
+        element.nodeData = nodeData;
+        treeContainer.appendChild(element);
+        
+        // 递归创建子节点
+        if (nodeData.children.length > 0) {
+          nodeData.children.forEach((child) => {
+            createNodeElement({
+              ...child,
+              level: nodeData.level + 1
+            })
+          });
+        }
+      }
+
+      // 将树形结构渲染到页面上
+      treeData.forEach((node, index) => {
+        createNodeElement({
+          ...node,
+          level: 1
+        })
+      });
+
+      let draggedElement = null;
+
+      // 添加拖动事件监听器
+      treeContainer.addEventListener("dragstart", function (event) {
+        draggedElement = event.target;
+        // 另一种方法是将属性存储在元素的自定义属性中
+        const attributes = {};
+        Array.from(event.target.attributes).forEach(attr => {
+          attributes[attr.name] = attr.value;
+        });
+        // 使用dataTransfer.setData来存储整个对象
+        event.dataTransfer.setData('application/json', JSON.stringify(attributes));
+      });
+
+      treeContainer.addEventListener("dragover", function (event) {
+        // 阻止默认行为以允许放置
+        event.preventDefault();
+      });
+
+      treeContainer.addEventListener("dragenter", function (event) {
+        // 移除所有同级元素的辅助线
+        // const siblings = event.target.parentNode.children;
+        // for (let sibling of siblings) {
+        //   sibling.classList.remove('drag-enter-animation');
+        // }
+        // 添加辅助线
+        
+
+      // event.target.attributes["data-id"] || 
+        if(!event.target.contains(event.relatedTarget)) {
+          console.log(
+            '%c [ event ]-144', 'font-size:13px; background:pink; color:#bf2c9f;', 
+            event.target.getBoundingClientRect(),
+            event.clientX
+          );
+          event.target.classList.add('drag-enter-animation');
+        }
+        // 阻止默认行为以允许放置
+        event.preventDefault();
+      });
+
+      treeContainer.addEventListener("dragleave", function (event) {
+        event.preventDefault();
+        // 移除元素的辅助线
+        event.target.classList.remove('drag-enter-animation');
+        // 移除所有同级元素的辅助线
+        // const siblings = event.target.parentNode.children;
+        // for (let sibling of siblings) {
+        //   sibling.classList.remove('drag-enter-animation');
+        // }
+      });
+
+      treeContainer.addEventListener("drop", function (event) {
+        // 阻止默认行为
+        event.preventDefault();
+        // 移除元素的辅助线
+        event.target.classList.remove('drag-enter-animation');
+
+        console.log('%c [ event ]-127', 'font-size:13px; background:pink; color:#bf2c9f;', event)
+        // 获取被拖动的节点
+        const data = event.dataTransfer.getData('application/json');
+        const attributes = JSON.parse(data);
+
+        const targetElement = event.target;
+
+        // 这里可以添加逻辑来处理拖动元素的放置 将拖动的元素移动到目标元素的位置
+        if (targetElement !== draggedElement) {
+          targetElement.parentNode.insertBefore(draggedElement, targetElement);
+        }
+
+      });
+    </script>
+  </body>
+</html>
