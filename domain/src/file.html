@@ -166,17 +166,15 @@
       #tree [data-level="5"] {
         margin-left: 50px;
       }
-      .drag-enter-animation {
+      #tree .drag-highlight {
         position: relative;
+        background: #4e71f2;
       }
-      .drag-enter-animation::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background-color: red;
-        bottom: -2px;
+      #tree .drag-border-top {
+        border-top-color: red;
+      }
+      #tree .drag-border-bottom {
+        border-bottom-color: red;
       }
     </style>
   </head>
@@ -184,6 +182,9 @@
     <div id="tree" draggable="false"></div>
 
     <script>
+      // 维护一个展开状态的对象
+      const expandedNodes = {};
+
       const treeData = [
         {
           id: 1,
@@ -222,6 +223,104 @@
       // 获取树的容器
       const treeContainer = document.getElementById("tree");
 
+      // 事件
+      const onMousemove = (event) => {
+      }
+
+      let draggedElement = null;
+
+      // 开始拖拽一个元素或选中的文本时触发
+      const onDragstart = (event) => {
+        draggedElement = event.target;
+        // 另一种方法是将属性存储在元素的自定义属性中
+        const attributes = {};
+        Array.from(event.target.attributes).forEach(attr => {
+          attributes[attr.name] = attr.value;
+        });
+        // 使用dataTransfer.setData来存储整个对象
+        event.dataTransfer.setData('application/json', JSON.stringify(attributes));
+      }
+
+      // 当拖拽元素或选中的文本到一个可释放目标时触发
+      const onDragenter = (event) => {
+        // 移除所有同级元素的辅助线
+        // const siblings = event.target.parentNode.children;
+        // for (let sibling of siblings) {
+        //   sibling.classList.remove('drag-highlight');
+        // }
+        // 添加辅助线
+        
+
+        // event.target.attributes["data-id"] || 
+        // if(!event.target.contains(event.relatedTarget)) {
+        //   event.target.classList.add('drag-highlight');
+        // }
+        // 阻止默认行为以允许放置
+        event.preventDefault();
+      }
+
+      // 当元素或选中的文本被拖到一个可释放目标上时触发（每 100 毫秒触发一次）。
+      const onDragover = (event) => {
+        // 阻止默认行为以允许放置
+        event.preventDefault();
+        const { clientX, clientY } = event;
+        const currElm = event.target.getBoundingClientRect();
+
+        // 判断鼠标位置并添加相应的样式
+        if(clientY < currElm.top + 5) {
+          event.target.classList.remove('drag-highlight'); // 移除背景色
+          event.target.classList.add('drag-border-top'); // 添加上边框
+          event.target.classList.remove('drag-border-bottom'); // 移除下边框
+        } else if (clientY > currElm.top + currElm.height - 5) {
+          event.target.classList.remove('drag-highlight'); // 移除背景色
+          event.target.classList.remove('drag-border-top'); // 移除上边框
+          event.target.classList.add('drag-border-bottom'); // 添加下边框
+        } else if(clientY > currElm.top && clientY < currElm.top + currElm.height) {
+          event.target.classList.add('drag-highlight'); // 在中间时添加背景色
+          event.target.classList.remove('drag-border-top'); // 移除上边框
+          event.target.classList.remove('drag-border-bottom'); // 移除下边框
+        }
+      }
+
+      // 当拖拽元素或选中的文本离开一个可释放目标时触发。
+      const onDragleave = (event) => {
+        // 阻止默认行为以允许放置
+        event.preventDefault();
+        // 移除元素的辅助线
+        event.target.classList.remove('drag-highlight');
+        event.target.classList.remove('drag-border-top');
+        event.target.classList.remove('drag-border-bottom');
+        // 移除所有同级元素的辅助线
+        // const siblings = event.target.parentNode.children;
+        // for (let sibling of siblings) {
+        //   sibling.classList.remove('drag-highlight');
+        // }
+      }
+
+      // 当元素或选中的文本在可释放目标上被释放时触发
+      const onDrop = (event) => {
+        // 阻止默认行为
+        event.preventDefault();
+
+        // console.log('%c [ event ]-127', 'font-size:13px; background:pink; color:#bf2c9f;', event)
+        // 获取被拖动的节点
+        const data = event.dataTransfer.getData('application/json');
+        const attributes = JSON.parse(data);
+
+        const targetElement = event.target;
+
+        // 这里可以添加逻辑来处理拖动元素的放置 将拖动的元素移动到目标元素的位置
+        if (targetElement !== draggedElement) {
+          targetElement.parentNode.insertBefore(draggedElement, targetElement);
+        }
+      }
+
+      // 当拖拽操作结束时触发 (比如松开鼠标按键或敲“Esc”键)
+      const onDragend = (event) => {
+        // 阻止默认行为
+        event.preventDefault();
+      }
+
       function createNodeElement(nodeData) {
         const element = document.createElement("div");
         element.setAttribute("draggable", true);
@@ -230,6 +329,15 @@
         element.textContent = nodeData.title;
         // 将原始数据存储在元素上，以便后续操作
         element.nodeData = nodeData;
+        // 添加事件监听器
+        element.addEventListener('mousemove', onMousemove);
+        element.addEventListener('dragstart', onDragstart);
+        element.addEventListener('dragenter', onDragenter);
+        element.addEventListener('dragover', onDragover);
+        element.addEventListener('dragleave', onDragleave);
+        element.addEventListener('drop', onDrop);
+        element.addEventListener('dragend', onDragend);
+
         treeContainer.appendChild(element);
         
         // 递归创建子节点
@@ -251,77 +359,10 @@
         })
       });
 
-      let draggedElement = null;
-
-      // 添加拖动事件监听器
-      treeContainer.addEventListener("dragstart", function (event) {
-        draggedElement = event.target;
-        // 另一种方法是将属性存储在元素的自定义属性中
-        const attributes = {};
-        Array.from(event.target.attributes).forEach(attr => {
-          attributes[attr.name] = attr.value;
-        });
-        // 使用dataTransfer.setData来存储整个对象
-        event.dataTransfer.setData('application/json', JSON.stringify(attributes));
-      });
-
-      treeContainer.addEventListener("dragover", function (event) {
-        // 阻止默认行为以允许放置
-        event.preventDefault();
-      });
-
-      treeContainer.addEventListener("dragenter", function (event) {
-        // 移除所有同级元素的辅助线
-        // const siblings = event.target.parentNode.children;
-        // for (let sibling of siblings) {
-        //   sibling.classList.remove('drag-enter-animation');
-        // }
-        // 添加辅助线
-        
-
-      // event.target.attributes["data-id"] || 
-        if(!event.target.contains(event.relatedTarget)) {
-          console.log(
-            '%c [ event ]-144', 'font-size:13px; background:pink; color:#bf2c9f;', 
-            event.target.getBoundingClientRect(),
-            event.clientX
-          );
-          event.target.classList.add('drag-enter-animation');
-        }
-        // 阻止默认行为以允许放置
-        event.preventDefault();
-      });
-
-      treeContainer.addEventListener("dragleave", function (event) {
-        event.preventDefault();
-        // 移除元素的辅助线
-        event.target.classList.remove('drag-enter-animation');
-        // 移除所有同级元素的辅助线
-        // const siblings = event.target.parentNode.children;
-        // for (let sibling of siblings) {
-        //   sibling.classList.remove('drag-enter-animation');
-        // }
-      });
-
-      treeContainer.addEventListener("drop", function (event) {
-        // 阻止默认行为
-        event.preventDefault();
-        // 移除元素的辅助线
-        event.target.classList.remove('drag-enter-animation');
-
-        console.log('%c [ event ]-127', 'font-size:13px; background:pink; color:#bf2c9f;', event)
-        // 获取被拖动的节点
-        const data = event.dataTransfer.getData('application/json');
-        const attributes = JSON.parse(data);
-
-        const targetElement = event.target;
-
-        // 这里可以添加逻辑来处理拖动元素的放置 将拖动的元素移动到目标元素的位置
-        if (targetElement !== draggedElement) {
-          targetElement.parentNode.insertBefore(draggedElement, targetElement);
-        }
-
-      });
+      // treeContainer.addEventListener("dragenter", function (event) {
+      //   console.log('%c [ dragenter ]-206', 'font-size:13px; background:pink; color:#bf2c9f;')
+      //   event.preventDefault();
+      // });
     </script>
   </body>
 </html>
