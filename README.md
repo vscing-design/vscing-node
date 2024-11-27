@@ -7,3 +7,4 @@ https://www.figma.com/design/t9tDcW7N4p09duxLHBSh9K/MyTab?node-id=164-155&node-t
 - 基础控制器、dto、vo、数据库等
 - https://www.jianshu.com/p/6ba119dee45d
 - https://developer.chrome.google.cn/docs/devtools/performance/reference?hl=zh-cn
+- touchmove 和 pointermove 和 mousemove
