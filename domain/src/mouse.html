@@ -16,6 +16,12 @@
       margin-top: 5px;
       cursor: move;
     }
+    #tree [data-id] .drag-handle {
+      border: 1px dashed #ccc;
+      padding: 5px;
+      margin-top: 5px;
+      cursor: move;
+    }
     #tree [data-level="2"] {
       margin-left: 20px;
     }
@@ -70,6 +76,7 @@
 
     // 事件
     const onMousedown = (event) => {
+      console.log(123)
       if (event.target.getAttribute('draggable') === 'true') {
         event.preventDefault();
         isDragging = true;
@@ -92,7 +99,7 @@
     const onMousemove = (event) => {
       if (isDragging && preview) {
         preview.style.transform = `translate(${event.clientX}px, ${event.clientY}px)`;
-
+        console.log('鼠标移动', event.clientY, event.currentTarget)
         // 检查并更新高亮位置
         // updateHighlight(event.clientY);
       }
@@ -124,12 +131,57 @@
       }
     };
 
+    const onNodeMouseover = (event) => {
+      if (isDragging) {
+        const node = event.currentTarget;
+        const rect = node.getBoundingClientRect();
+        const clientY = event.clientY;
+        console.log(clientY, event.currentTarget);
+        const topDistance = clientY - rect.top;
+        const bottomDistance = rect.bottom - clientY;
+
+        if (topDistance < 5) {
+          node.classList.add('drag-border-top');
+        } else if (bottomDistance < 5) {
+          node.classList.add('drag-border-bottom');
+        } else {
+          node.classList.add('drag-highlight');
+        }
+      }
+    };
+
+    const onTopBorderMouseover = (event) => {
+      if (isDragging) {
+        const node = event.currentTarget.parentElement;
+        node.classList.add('drag-border-top');
+        node.classList.remove('drag-border-bottom');
+      }
+    };
+
+    const onBottomBorderMouseover = (event) => {
+      if (isDragging) {
+        const node = event.currentTarget.parentElement;
+        node.classList.add('drag-border-bottom');
+        node.classList.remove('drag-border-top');
+      }
+    };
+
+    const onNodeMouseout = (event) => {
+      if (isDragging) {
+        const node = event.currentTarget;
+        node.classList.remove('drag-highlight', 'drag-border-top', 'drag-border-bottom');
+      }
+    };
 
     const onMouseup = (event) => {
       if (isDragging && preview) {
         isDragging = false;
-        // document.body.removeChild(preview);
-        // preview = null;
+        document.body.removeChild(preview);
+        preview = null;
+
+        // 移除拖动边框样式
+        const nodes = document.querySelectorAll('#tree [data-id]');
+        nodes.forEach(node => node.classList.remove('drag-highlight', 'drag-border-top', 'drag-border-bottom'));
 
         // 完成拖动后，更新节点位置
         const targetNode = findTargetNode(event.clientY);
@@ -196,18 +248,39 @@
     const treeContainer = document.getElementById("tree");
 
     function createNodeElement(nodeData, level = 1) {
-      const element = document.createElement("div");
-      element.setAttribute("draggable", true);
-      element.setAttribute("data-id", nodeData.id);
-      element.setAttribute("data-level", level);
-      element.textContent = nodeData.title;
+      // 自定义 HTML 字符串
+      const nodeHTML = `
+        <div class="node" draggable="false" data-id="${nodeData.id}" data-level="${level}">
+          <div class="node-top" data-type="top"></div>
+          <div class="node-content">${nodeData.title}</div>
+          <div class="node-bottom" data-type="bottom"></div>
+        </div>
+      `;
+
+      // 创建元素并插入到树容器中
+      const parser = new DOMParser();
+      const nodeFragment = parser.parseFromString(nodeHTML, 'text/html').body.firstChild;
+      treeContainer.appendChild(nodeFragment);
+
+      // 获取新创建的节点
+      const element = nodeFragment;
+      console.log(nodeFragment, element);
+
       // 将原始数据存储在元素上，以便后续操作
-      element.nodeData = nodeData;
+      // element.nodeData = nodeData;
+
+      // 为顶部和底部边框添加事件监听器
+      const topBorder = element.querySelector('.node-top');
+      const bottomBorder = element.querySelector('.node-bottom');
+
+      topBorder.addEventListener('mouseover', onTopBorderMouseover);
+      bottomBorder.addEventListener('mouseover', onBottomBorderMouseover);
 
       // 添加事件监听器
       element.addEventListener('mousedown', onMousedown);
-
-      treeContainer.appendChild(element);
+      element.addEventListener('mouseover', onNodeMouseover);
+      element.addEventListener('mouseout', onNodeMouseout);
+      element.addEventListener('mouseup', onMouseup);
 
       // 递归创建子节点
       if (nodeData.children.length > 0) {
