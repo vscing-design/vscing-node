@@ -44,9 +44,24 @@
       #tree .drag-border-bottom {
         border-bottom-color: red;
       }
+
+      .drag-preview {
+        position: fixed;
+        pointer-events: none;
+        z-index: 1000;
+        width: 100px;
+        height: 100px;
+        background-color: lightblue;
+        border: 2px solid black;
+        opacity: 0.8;
+        transform: translateZ(0); /* 添加此行 */
+        transition: none; /* 添加此行 */
+      }
     </style>
   </head>
   <body>
+    <h3>html拖动 不适合自定义拖动预览</h3>
+
     <div id="tree" draggable="false"></div>
 
     <script>
@@ -93,12 +108,15 @@
 
       // 事件
       const onMousemove = (event) => {
+        // console.log(event)
       }
 
+      let dragPreview = null;
       let draggedElement = null;
 
       // 开始拖拽一个元素或选中的文本时触发
       const onDragstart = (event) => {
+
         draggedElement = event.target;
         // 另一种方法是将属性存储在元素的自定义属性中
         const attributes = {};
@@ -106,7 +124,24 @@
           attributes[attr.name] = attr.value;
         });
         // 使用dataTransfer.setData来存储整个对象
-        event.dataTransfer.setData('application/json', JSON.stringify(attributes));
+        event.dataTransfer.setData('application/json', JSON.stringify(attributes));  
+        event.dataTransfer.effectAllowed = "none"; // 添加此行
+
+        // 创建拖动预览元素
+        dragPreview = document.createElement('div');
+        dragPreview.className = 'drag-preview';
+        document.body.appendChild(dragPreview);
+      }
+
+      // 拖拽开始时触发
+      const onDrag = (event) => {
+        // 阻止默认行为
+        event.preventDefault();
+        console.log("onDrag")
+        if (dragPreview) {
+          // 更新拖动预览的位置
+          dragPreview.style.transform = `translate(${event.clientX - dragPreview.offsetWidth / 2}px, ${event.clientY - dragPreview.offsetHeight / 2}px)`;
+        }
       }
 
       // 当拖拽元素或选中的文本到一个可释放目标时触发
@@ -170,6 +205,11 @@
         // 阻止默认行为
         event.preventDefault();
 
+
+        event.target.classList.remove('drag-highlight');
+        event.target.classList.remove('drag-border-top');
+        event.target.classList.remove('drag-border-bottom');
+
         // console.log('%c [ event ]-127', 'font-size:13px; background:pink; color:#bf2c9f;', event)
         // 获取被拖动的节点
         const data = event.dataTransfer.getData('application/json');
@@ -187,6 +227,11 @@
       const onDragend = (event) => {
         // 阻止默认行为
         event.preventDefault();
+        if (dragPreview) {
+          // 移除拖动预览
+          document.body.removeChild(dragPreview);
+          dragPreview = null;
+        }
       }
 
       function createNodeElement(nodeData) {
@@ -199,6 +244,7 @@
         element.nodeData = nodeData;
         // 添加事件监听器
         element.addEventListener('mousemove', onMousemove);
+        element.addEventListener('drag', onDrag);
         element.addEventListener('dragstart', onDragstart);
         element.addEventListener('dragenter', onDragenter);
         element.addEventListener('dragover', onDragover);
@@ -231,11 +277,6 @@
       //   console.log('%c [ dragenter ]-206', 'font-size:13px; background:pink; color:#bf2c9f;')
       //   event.preventDefault();
       // });
-//       H5 之前实现拖拽实现方法
-// PC 端
-// 利用鼠标 mousedown、mousemove 和 mouseup 三个事件可以实现拖拽操作对象跟随鼠标任意移动的效果。
-// H5 端
-// 使用 Touch 事件： touchstart、ontouchmove 和 touchend。
     </script>
   </body>
 </html>
