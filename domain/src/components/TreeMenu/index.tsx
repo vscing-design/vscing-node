@@ -1,49 +1,7 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import './mouse.less';
-// .drag-preview {
-//   position: fixed;
-//   top: 0;
-//   left: 0;
-//   border: 1px dashed #eaeaea;
-//   pointer-events: none; /* 防止helper元素影响其他元素的事件 */
-// }
-// .border-highlight-top {
-//   border-top-color: red !important;
-// }
-// .border-highlight-bottom {
-//   border-bottom-color: red !important;
-// }
-// .highlight {
-//   background-color: #113af2 !important;
-// }
-import styles from './index.less';
-// .node {
-//   display: flex;
-//   align-items: center;
-//   justify-content: space-between;
-//   max-width: 300px;
-//   border: 1px dashed #ccc;
-//   padding: 5px 10px;
-//   margin-top: 5px;
-//   transition: background-color 0.2s, border-color 0.2s;
-//   cursor: pointer;
-//   .leftNode {
-//     display: flex;
-//     align-items: center;
-//     gap: 6px;
-//     .move {
-//       display: block;
-//       cursor: move;
-//     }
-//   }
-// }
-import Container from '@/components/Container';
-import { to } from '@/utils/util';
-import { message } from '@/utils/message';
+import styles from './index.module.less';
 import { Context } from './Context';
-// import React from "react";
-
-// export const Context = React.createContext<any>({});
 import {
   CaretDownOutlined,
   CaretRightOutlined,
@@ -52,14 +10,20 @@ import {
 } from '@ant-design/icons';
 
 // 树节点组件，用于递归渲染树
-const TreeNode = ({ node, level = 0, onToggle, isExpanded }) => {
+const TreeNode = ({ node, level = 0, onToggle, isExpanded }: any) => {
 
-  const { previewRef, draggedItemRef, isDraggingRef } = useContext(Context);
+  const { previewRef, draggedItemRef, currDataRef, isDraggingRef, positionRef } = useContext(Context);
 
   const onMouseDown = (e: any, data: any) => {
     e.preventDefault();
     if (isDraggingRef.current) {
+      const { node } = data;
+      if(node.id && isExpanded[node.id]) {
+        onToggle(node.id);
+      }
+      
       draggedItemRef.current = e.currentTarget;
+      currDataRef.current = data;
       // 创建拖动预览元素
       previewRef.current = document.createElement('div');
       previewRef.current.style.width = `${e.currentTarget.offsetWidth}px`;
@@ -74,8 +38,21 @@ const TreeNode = ({ node, level = 0, onToggle, isExpanded }) => {
 
   const onMouseMove = (e: any, data: any) => {
     if (isDraggingRef.current && e.currentTarget !== draggedItemRef.current) {
+      const { node } = data;
+      if(node.id && !isExpanded[node.id]) {
+        onToggle(node.id);
+      }
+
       const rect = e.currentTarget.getBoundingClientRect();
       const y = e.clientY;
+
+      if(y < rect.top + 5 && y > rect.top - 5) {
+        positionRef.current = 1;
+      } else if(y > rect.bottom - 5 && y > rect.bottom + 5) {
+        positionRef.current = 3;
+      } else if(y > rect.top + 5 && y < rect.bottom - 5) {
+        positionRef.current = 2;
+      }
 
       e.currentTarget.classList.toggle('border-highlight-top', y < rect.top + 5);
       e.currentTarget.classList.toggle('border-highlight-bottom', y > rect.bottom - 5);
@@ -91,6 +68,21 @@ const TreeNode = ({ node, level = 0, onToggle, isExpanded }) => {
 
   const onMouseUp = (e: any, data: any) => {
     if (e.currentTarget !== draggedItemRef.current) {
+      // 数据处理
+      const { node } = data;
+      const prevNode = currDataRef.current;
+      // 判断方位
+      switch (positionRef.current) {
+        case 1:
+          // prevNode放置在node上面，并移除prevNode数据
+          break;
+        case 2:
+          // prevNode放置在node里面第一个，并移除prevNode数据
+          break;
+        case 3:
+          // prevNode放置在node下面，并移除prevNode数据
+          break;
+      }
       e.currentTarget.classList.remove('border-highlight-top', 'border-highlight-bottom', 'highlight');
     }
   }
@@ -100,8 +92,12 @@ const TreeNode = ({ node, level = 0, onToggle, isExpanded }) => {
       <div
         className={styles.node}
         style={{ marginLeft: level * 20 }}
-        onMouseDown={(e) => onMouseDown(e, {})}
-        onMouseMove={(e) => onMouseMove(e, {})}
+        onMouseDown={(e) => onMouseDown(e, {
+          node
+        })}
+        onMouseMove={(e) => onMouseMove(e, {
+          node
+        })}
         onMouseOut={(e) => onMouseOut(e, {})}
         onMouseUp={(e) => onMouseUp(e, {})}
       >
@@ -140,11 +136,33 @@ const TreeNode = ({ node, level = 0, onToggle, isExpanded }) => {
 const Tree = (props: any) => {
   const { data } = props;
 
+  // 将树形结构转换为带有索引和映射表的扁平数组
+  function flattenTree(tree: any[], indexMap = new Map()) {
+    const flatArray: any[] = [];
+    let currentIndex = 0;
+
+    function traverse(node: any, parentId: number, level: number) {
+      const newIndex = currentIndex++;
+      flatArray.push({ ...node, parentId, level });
+      indexMap.set(node.id, newIndex);
+
+      if (node.children && node.children.length > 0) {
+        node.children.forEach((child: any) => traverse(child, node.id, level + 1));
+      }
+    }
+
+    tree.forEach(node => traverse(node, 0, 1));
+    return { flatArray, indexMap };
+  }
+
+console.log(flattenTree(data));
+
   // 句柄
   const previewRef = useRef<any>(null);
-  const treeRef = useRef<any>(null);
   const draggedItemRef = useRef<any>(null);
+  const currDataRef = useRef<any>(null);
   const isDraggingRef = useRef<boolean>(false);
+  const positionRef = useRef<number>(0); // 1 放置在元素上方 2 放置在元素下级 3 放置在元素下方 
 
   // 状态：跟踪每个节点的展开状态
   const [isExpanded, setIsExpanded] = useState({});
@@ -180,8 +198,7 @@ const Tree = (props: any) => {
   // 处理节点展开/折叠的函数
   const toggleNode = (nodeId: any) => {
     setIsExpanded((prevState) => {
-      const newState = { ...prevState };
-      const currentExpandedState = { ...newState[nodeId] };
+      const newState: any = { ...prevState };
       // 切换当前节点的展开状态
       newState[nodeId] = !newState[nodeId];
       return newState;
@@ -192,9 +209,11 @@ const Tree = (props: any) => {
     <Context.Provider value={{
       previewRef,
       draggedItemRef,
-      isDraggingRef
+      currDataRef,
+      isDraggingRef,
+      positionRef
     }}>
-      <div ref={treeRef}>
+      <div>
         {(data || []).map((node: any) => (
           <TreeNode key={node.id} node={node} onToggle={toggleNode} isExpanded={isExpanded} />
         ))}
@@ -222,45 +241,43 @@ function project() {
   };
 
   return (
-    <div className={styles.warp}>
-      <Container>
-          <Tree
-            data={[
+    <div>
+      <Tree
+        data={[
+          {
+            id: 1,
+            title: 'Node 1',
+            children: [
               {
-                id: 1,
-                title: 'Node 1',
-                children: [
-                  {
-                    id: 2,
-                    title: 'Node 1.1',
-                    children: [],
-                  },
-                  {
-                    id: 3,
-                    title: 'Node 1.2',
-                    children: [],
-                  },
-                ],
-              },
-              {
-                id: 4,
-                title: 'Node 2',
-                children: [
-                  {
-                    id: 5,
-                    title: 'Node 2.1',
-                    children: [],
-                  },
-                ],
-              },
-              {
-                id: 6,
-                title: 'Node 3',
+                id: 2,
+                title: 'Node 1.1',
                 children: [],
               },
-            ]}
-          />
-      </Container>
+              {
+                id: 3,
+                title: 'Node 1.2',
+                children: [],
+              },
+            ],
+          },
+          {
+            id: 4,
+            title: 'Node 2',
+            children: [
+              {
+                id: 5,
+                title: 'Node 2.1',
+                children: [],
+              },
+            ],
+          },
+          {
+            id: 6,
+            title: 'Node 3',
+            children: [],
+          },
+        ]}
+      />
     </div>
   );
 }

@@ -12,6 +12,7 @@ import { useTheme } from "@/shadcn-ui/components/theme-provider"
 import { Sidebar, SidebarInset, SidebarMenuButton, SidebarProvider, SidebarTrigger } from "@/shadcn-ui/ui/sidebar"
 import { useMemo } from "react"
 import Images from "@/assets"
+import TreeMenu from "@/components/TreeMenu"
 
 function ModeToggle() {
 
@@ -74,13 +75,14 @@ function ModeToggle() {
             <Button>导入或创建书签库</Button>
           </DropdownMenuContent>
         </DropdownMenu>
-        {/* <Tree/> */}
         <div>预览书签库</div>
+       
       </Sidebar>
       <SidebarInset>
         <main>
           <SidebarTrigger />
           123333
+          <TreeMenu />
         </main>
       </SidebarInset>
     </SidebarProvider>

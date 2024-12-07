@@ -6,11 +6,6 @@ import tailwind from 'tailwindcss'
 
 // https://vite.dev/config/
 export default defineConfig({
-  css: {
-    postcss: {
-      plugins: [tailwind(), autoprefixer()],
-    },
-  },
   plugins: [react()],
   resolve: {
     alias: {
@@ -19,5 +14,17 @@ export default defineConfig({
   },
   server: {
     port: 5300,
+  },
+  css: {
+    postcss: {
+      plugins: [tailwind(), autoprefixer()],
+    },
+    modules: {
+    },
+    preprocessorOptions: {
+      less: {
+        javascriptEnabled: true,
+      }
+    }
   },
 })
