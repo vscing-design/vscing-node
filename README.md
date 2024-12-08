@@ -9,3 +9,4 @@ https://www.figma.com/design/t9tDcW7N4p09duxLHBSh9K/MyTab?node-id=164-155&node-t
 - https://developer.chrome.google.cn/docs/devtools/performance/reference?hl=zh-cn
 - touchmove 和 pointermove 和 mousemove
 - volta install pnpm@latest --NODE_VERSION=14
+- volta install pnpm --tool - registry=https://registry.npm.taobao.org/
