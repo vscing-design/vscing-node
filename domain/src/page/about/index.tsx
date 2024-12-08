@@ -1,14 +1,14 @@
-import { Icons } from "@/assets/icons";
+// import { Icons } from "@/assets/icons";
 import Header from "@/components/Header";
 import { Button } from "@/shadcn-ui/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/shadcn-ui/ui/form";
 import { Input } from "@/shadcn-ui/ui/input";
 import { Label } from "@/shadcn-ui/ui/label";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shadcn-ui/ui/card";
-import { AppWindowIcon, AppWindowMacIcon, FolderCodeIcon } from "lucide-react";
+import { AppWindowIcon, FolderCodeIcon } from "lucide-react";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 
 const formSchema = z.object({
   username: z.string().min(2).max(50),
