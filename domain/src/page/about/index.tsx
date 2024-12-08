@@ -6,7 +6,7 @@ import { Input } from "@/shadcn-ui/ui/input";
 import { Label } from "@/shadcn-ui/ui/label";
 import { z } from "zod";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shadcn-ui/ui/card";
-import { AppWindowIcon, FolderCodeIcon } from "lucide-react";
+import { AppWindowIcon, Check, FolderCodeIcon } from "lucide-react";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
@@ -35,28 +35,26 @@ function About() {
     <Header />
 
     <div className="flex flex-col items-center">
-      <div>导入或创建书签库</div>
 
-      <div className="flex items-center gap-4">
-        <div>
-          <Label
-            htmlFor="paypal"
-            className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-          >
-            <AppWindowIcon/>
-            导入浏览器书签文件并自动生成
-          </Label>
-        </div>
+      <div className="mt-10 h-7 font-semibold text-xl">导入或创建书签库</div>
 
-        <div>
-          <Label
-            htmlFor="paypal"
-            className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-          >
-            <FolderCodeIcon />
-            从零开始手动创建
-          </Label>
-        </div>
+      <div className="flex items-center gap-4 mt-12">
+        <Label
+          className="w-[236px] h-[92px] rd-lg flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary relative"
+        >
+          <AppWindowIcon className="w-5 h-5" />
+          <span>导入浏览器书签文件并自动生成</span>
+          <Check className="absolute" />
+        </Label>
+
+        <Label
+          className="w-[236px] h-[92px] rd-lg flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary relative"
+        >
+          <FolderCodeIcon className="w-5 h-5" />
+          <span>从零开始手动创建</span>
+          <Check className="absolute" />
+        </Label>
+
       </div>
 
       <Card>

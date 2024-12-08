@@ -7,6 +7,10 @@ export default {
   ],
   theme: {
   	extend: {
+      spacing: {
+        // '236px': '236px',
+        // '92px': '92px',
+      },
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
