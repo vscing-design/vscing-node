@@ -11,3 +11,4 @@ https://www.figma.com/design/t9tDcW7N4p09duxLHBSh9K/MyTab?node-id=164-155&node-t
 - volta install pnpm@latest --NODE_VERSION=14
 - volta install pnpm --tool - registry=https://registry.npm.taobao.org/
 - 1.Tailwind CSS IntelliSense 2.Tailwind Fold 3.Tailwind Documentation 4.Tailwind Config Viewer
+- https://juejin.cn/post/7311619723317264395
