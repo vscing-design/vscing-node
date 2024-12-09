@@ -13,7 +13,7 @@ function Header() {
     return theme === 'dark' || theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches;
   }, [theme]);
 
-  return <div className="flex justify-between items-center w-[1440px] h-[72px] mx-auto pl-[24px] pr-[32px]">
+  return <div className="flex justify-between items-center max-w-[1440px] w-full h-[72px] mx-auto pl-[24px] pr-[32px]">
     <div className="w-[122px] h-[24px]">
       <img src={isDark ? Images.darkLogo : Images.lightLogo}/>
     </div>
